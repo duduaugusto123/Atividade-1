@@ -1,0 +1,96 @@
+create database company_1;
+use company_1;
+
+create TABLE product_lines (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  text_description TEXT NOT NULL,
+  html_description VARCHAR(250) NOT NULL,
+  image TEXT(300) NOT NULL,
+  UNIQUE (image(300))
+);
+
+create TABLE payments (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  customer_number BIGINT NOT NULL,
+  check_number BIGINT NOT NULL UNIQUE,
+  payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  amount DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (customer_number) REFERENCES customers(customer_number)
+);
+
+create TABLE offices (
+  id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  phone VARCHAR(14) NOT NULL,
+  address_line_1 VARCHAR(150) NOT NULL,
+  address_line_2 VARCHAR(150),
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  country VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(10) NOT NULL,
+  territory VARCHAR(150)
+);
+
+CREATE TABLE employees (
+  id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  last_name VARCHAR(50) NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  extension VARCHAR(150) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  office_id BIGINT NOT NULL,
+  reports_to BIGINT,
+  job_title VARCHAR(50) NOT NULL,
+  FOREIGN KEY (office_id) REFERENCES offices(id),
+  CONSTRAINT fk_reports_to FOREIGN KEY (reports_to) REFERENCES employees(id)
+);
+
+CREATE TABLE products (
+  id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  product_name VARCHAR(150) NOT NULL,
+  product_line_id BIGINT NOT NULL,
+  product_scale VARCHAR(150) NOT NULL,
+  product_vendor VARCHAR(100) NOT NULL,
+  product_description TEXT NOT NULL,
+  quantity_in_stock BIGINT NOT NULL,
+  buy_price DECIMAL(10,2) NOT NULL,
+  msrp VARCHAR(150),
+  FOREIGN KEY (product_line_id) REFERENCES product_lines(id)
+);
+
+CREATE TABLE order_details (
+  id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  order_number BIGINT NOT NULL,
+  product_id BIGINT NOT NULL,
+  quantity_ordered BIGINT NOT NULL,
+  price_each DECIMAL(10,2) NOT NULL,
+  order_line_number BIGINT NOT NULL,
+  FOREIGN KEY (order_number) REFERENCES orders(order_number),
+  FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE orders (
+  order_number BIGINT PRIMARY KEY,
+  order_date DATE NOT NULL,
+  required_date DATE NOT NULL,
+  shipped_date DATE,
+  status TEXT NOT NULL,
+  comments TEXT,
+  customer_number BIGINT,
+  FOREIGN KEY (customer_number) REFERENCES customers(customer_number)
+);
+
+CREATE TABLE customers (
+  customer_number BIGINT NOT NULL PRIMARY KEY,
+  customer_name VARCHAR(150) NOT NULL,
+  contact_last_name VARCHAR(150) NOT NULL,
+  contact_first_name VARCHAR(150) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  address_line_1 VARCHAR(50) NOT NULL,
+  address_line_2 VARCHAR(150),
+  city VARCHAR(50) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  postal_code VARCHAR(10) NOT NULL,
+  country VARCHAR(50),
+  sales_rep_employee_number BIGINT,
+  credit_limit DECIMAL(10,2),
+  FOREIGN KEY (sales_rep_employee_number) REFERENCES employees(id)
+);
