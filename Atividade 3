@@ -1,0 +1,36 @@
+CREATE DATABASE provedor_email;
+USE provedor_email;
+
+CREATE TABLE usuario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL UNIQUE,
+    senha VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE email (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    assunto VARCHAR(50) NOT NULL,
+    corpo TEXT,
+    data_envio DATETIME,
+    status ENUM('rascunho', 'enviando', 'enviado') DEFAULT 'rascunho',
+    remetente_id INT NOT NULL,
+    FOREIGN KEY (remetente_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE destinatario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email_id INT NOT NULL,
+    destinatario_id INT NOT NULL,
+    FOREIGN KEY (email_id) REFERENCES email(id),
+    FOREIGN KEY (destinatario_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE anexo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome_arquivo VARCHAR(50) NOT NULL,
+    tamanho INT NOT NULL,
+    link VARCHAR(100) NOT NULL,
+    email_id INT NOT NULL,
+    FOREIGN KEY (email_id) REFERENCES email(id)
+);
